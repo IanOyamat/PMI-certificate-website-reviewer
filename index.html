@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PMI certification · simple reviewer</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+        }
+        body {
+            background: #f1f4f9;
+            margin: 0;
+            padding: 25px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .reviewer-container {
+            max-width: 1000px;
+            width: 100%;
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 20px 40px -10px rgba(0,20,40,0.25);
+            padding: 30px 35px;
+        }
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 500;
+            color: #0b2b4a;
+            margin: 0 0 8px 0;
+            letter-spacing: -0.5px;
+            border-left: 7px solid #0a7e8c;
+            padding-left: 20px;
+        }
+        .sub {
+            color: #2c3e5c;
+            margin-left: 27px;
+            margin-bottom: 35px;
+            font-weight: 300;
+            font-size: 1.1rem;
+        }
+        .question-panel {
+            background: #f9fcff;
+            border-radius: 24px;
+            padding: 20px 25px;
+            margin-bottom: 20px;
+            border: 1px solid #dae4ed;
+            transition: 0.1s;
+        }
+        .correct-highlight {
+            background: #d9f2e4 !important;
+            border-left: 12px solid #1b8c5e !important;
+        }
+        .wrong-highlight {
+            background: #ffe9ec !important;
+            border-left: 12px solid #c7424a !important;
+        }
+        .q-title {
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: #10355e;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .q-num {
+            background: #10355e;
+            color: white;
+            border-radius: 40px;
+            width: 34px;
+            height: 34px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+        .question-text {
+            font-weight: 500;
+            color: #1a2f47;
+            font-size: 1.08rem;
+            margin: 10px 0 20px 0;
+            padding-left: 8px;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 15px 0 10px 0;
+        }
+        .option-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 40px;
+            border: 1px solid #cbd7e6;
+            transition: 0.1s;
+            font-size: 1rem;
+        }
+        input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #0f5b8b;
+            margin: 0;
+        }
+        .option-letter {
+            font-weight: 700;
+            color: #2b4b77;
+            min-width: 24px;
+        }
+        .option-text {
+            color: #152b3c;
+        }
+        .feedback-row {
+            margin-top: 20px;
+            padding: 15px 20px 5px 20px;
+            background: #edf2f9;
+            border-radius: 30px;
+            font-size: 1rem;
+            border: 1px solid #bccfdf;
+        }
+        .feedback-item {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            margin-bottom: 12px;
+        }
+        .feedback-badge {
+            font-weight: 700;
+        }
+        .feedback-correct {
+            color: #0f6e46;
+            background: #dff0e6;
+            padding: 3px 14px;
+            border-radius: 40px;
+        }
+        .feedback-wrong {
+            color: #ac2d34;
+            background: #ffd9dd;
+            padding: 3px 14px;
+            border-radius: 40px;
+        }
+        .your-answer, .right-answer {
+            background: white;
+            padding: 3px 16px;
+            border-radius: 40px;
+            border: 1px solid #b3c9db;
+        }
+        .btn-submit {
+            background: #0d2f56;
+            border: none;
+            color: white;
+            font-size: 1.4rem;
+            font-weight: 500;
+            padding: 18px 45px;
+            border-radius: 60px;
+            margin: 30px 0 15px 0;
+            width: fit-content;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #071d33;
+            transition: 0.1s;
+            border: 1px solid #214a75;
+        }
+        .btn-submit:hover {
+            background: #123f6b;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 0 #071d33;
+        }
+        .btn-submit:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #071d33;
+        }
+        .footer-notes {
+            color: #4d6079;
+            font-size: 0.9rem;
+            margin-top: 25px;
+            border-top: 1px dashed #a6c0d9;
+            padding-top: 20px;
+        }
+        hr {
+            border: 1px solid #d2e0ed;
+        }
+        .warning-no-selection {
+            background: #fff2db;
+            border-radius: 40px;
+            padding: 10px 25px;
+            color: #9b5f00;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+<div class="reviewer-container" id="reviewerContainer">
+    <h1>📋 PMI-Certification · reviewer</h1>
+    <div class="sub">all 87 questions – answer & see feedback (green = correct, red = wrong)</div>
+
+    <div id="quizRoot"></div>
+
+    <div style="display: flex; justify-content: center;">
+        <button class="btn-submit" id="submitQuiz">✅ Submit answers & review</button>
+    </div>
+    <div id="messageArea" style="text-align: center;"></div>
+    <div class="footer-notes">
+        ⚡ right answers are taken directly from the PDF (marked with green highlight). No explanations, only correct/incorrect.
+    </div>
+</div>
+
+<script>
+(function() {
+    // --------------------------------------------------------------
+    // raw questions based on PDF (exactly 87 items, numbered 1..87)
+    // each entry: id, questionText, options array [A, B, C, D], correctLetter (A,B,C,D)
+    // --------------------------------------------------------------
+    const questionsData = [
+        { id:1,  q:"What is a deliverable?", opts:["A. A unique output of a project","B. A resource allocated to the project","C. A checkpoint in the project timeline","D. A team member working on a project"], correct:"A" },
+        { id:2,  q:"Your customer states that the packaging for the new product being developed must be easy for everyone to open. During product testing, only 60% of the people were able to open the packaging easily. As the project manager, what should you do?", opts:["A. Request a team meeting to decide on corrective action.","B. Inform the project sponsor that the project has failed.","C. Meet with the product testers to change the results.","D. Inform the customer that more than 50% is an acceptable result"], correct:"A" },
+        { id:3,  q:"What is a project life cycle?", opts:["A. The sequence of activities that determines the shortest possible duration of a project","B. The tasks performed to deliver a product, service, or result with specified features and functions","C. The series of phases that a project passes through from its start to its completion","D. The steps used to identify the best possible solution to a problem"], correct:"C" },
+        { id:4,  q:"What is a benefit of creating a lessons learned document?", opts:["A. Sharing best practice approaches among the team members","B. Creating marketing materials that can be used to promote the product","C. Meeting with the client to provide closure to the project","D. Ensuring team members are held responsible for their mistakes"], correct:"A" },
+        { id:5,  q:"What is a key characteristic of the adaptive project management approach?", opts:["A. Continuous refinement of the product based upon stakeholder feedback","B. Minimal changes due to familiarity with project requirements","C. Sequential completion of tasks with no change in scope","D. Delivery of the product after the final phase has been completed"], correct:"A" },
+        { id:6,  q:"You are part of a project team that is working on developing a new app. A team member suggests that you add a feature to the app. The project manager says that the feature is out of scope. What should you do if a product feature is out of scope?", opts:["A. You should decline the development of the feature.","B. You should develop the feature as part of the project.","C. You should consider the feature a project dependency.","D. You should add the feature to the scope statement."], correct:"A" },
+        { id:7,  q:"What role does quality assurance play in the project development process?", opts:["A. It ensures the project is delivered within budget.","B. It ensures procedures are followed to meet standards for performance.","C. It ensures employees are qualified to complete their assigned tasks.","D. It ensures the project is delivered on time."], correct:"B" },
+        { id:8,  q:"Which scenario demonstrates a schedule dependency?", opts:["A. Team members must schedule activities during business hours.","B. Team members must wait to start a task until after another task is completed.","C. Team members must work independently on tasks.","D. Team members must determine the minimum time necessary to complete a project."], correct:"B" },
+        { id:9,  q:"Move each element of a project charter from the list on the left to its description on the right (not a real move, choose the matching pair concept – but we treat as: which element describes 'Why the project exists'?)", opts:["A. Project purpose","B. Project scope","C. Stakeholders","D. Authority"], correct:"A" }, // simplified
+        { id:10, q:"You are an event coordinator for an upcoming party. The customer changes the party date. You know that this change will result in an increase in the cost of the venue. What should you do to resolve the budget variance?", opts:["A. Determine the cost difference and discuss options with the customer.","B. Cancel the venue contract and then find a new venue.","C. Stay at the same venue and tell the caterers to remove menu items to save money.","D. Approve the date change and invoice the customer for more money."], correct:"A" },
+        { id:11, q:"Which action signifies the formal acceptance of the final product?", opts:["A. Closing of vendor contracts by the project team","B. Final budget approval by the project manager","C. Completion of all paperwork by the project manager","D. Approval by the project sponsor and customer"], correct:"D" },
+        { id:12, q:"You are the project manager for a small construction project. You receive an updated quote from one of the material suppliers and the cost has increased by $2000. You request a meeting with your project sponsor to discuss what to do next. Which stage of the change management process are you beginning?", opts:["A. Identify the change","B. Approve the change","C. Assess the change impact","D. Implement the approved change"], correct:"C" },
+        { id:13, q:"Recent feedback from a client requires adjusting the scope of a project as well as some additional funding. Who needs to provide the approval to move forward with the changes?", opts:["A. Business analyst","B. Project manager","C. Project sponsor","D. Resource manager"], correct:"C" },
+        { id:14, q:"You need to select a project management approach for your team. Key considerations include: The team has worked on similar projects, The deliverable must comply with standards and regulations, The project tasks are well-defined, The project deliverable is clearly defined. What project management approach should you choose?", opts:["A. Scrum","B. Adaptive","C. Predictive","D. Incremental"], correct:"C" },
+        { id:15, q:"Which project document authorizes the project manager to begin working on a project?", opts:["A. Project management plan","B. Project scope statement","C. Project charter","D. Project communication plan"], correct:"C" },
+        { id:16, q:"You are one of the team members planning a small community event. The project manager assigns you the task of planning for the event at a specific location. You find a better location and want to alert your team to the change in location. What responsibility and authority do you have regarding your assigned task?", opts:["A. You need to speak with the project manager about changing the location and wait for approval.","B. You can change the location without approval and set up for the community event.","C. You cannot approve the location change until all team members have voted on the decision.","D. You need to inform the sponsor directly about the change and then move the event to the new location."], correct:"A" },
+        { id:17, q:"What impact does gold plating have on a project?", opts:["A. The scope increases and the cost to the customer remains the same.","B. The scope increases and the cost to the customer increases.","C. The scope remains the same and the cost to the customer decreases.","D. The scope remains the same and the cost to the customer increases."], correct:"B" },
+        { id:18, q:"You are evaluating the skills needed in your project team to successfully complete a project. Which component of the project management plan are you working on?", opts:["A. Cost management plan","B. Scope management plan","C. Schedule management plan","D. Resource management plan"], correct:"D" },
+        { id:19, q:"Which component of the project management plan outlines the work needed to meet project objectives and deliverables?", opts:["A. Cost management plan","B. Scope management plan","C. Resource management plan","D. Schedule management plan"], correct:"B" },
+        { id:20, q:"Which project characteristic suggests that a predictive project management approach should be used?", opts:["A. High levels of change and risk","B. Defined deliverables and deadlines","C. Evolving goals and requirements","D. Multiple releases of product features"], correct:"B" },
+        { id:21, q:"What is project procurement?", opts:["A. The purchasing of external goods and services needed to complete a project","B. The analysis of the business requirements needed to complete a project","C. The identification of all the funding requirements needed to complete a project","D. The planning of all communication methods needed to complete a project"], correct:"A" },
+        { id:22, q:"In a project, what describes work that should be included and work that should be excluded?", opts:["A. Project baseline","B. Scope statement","C. Business case","D. Work breakdown structure (WBS)"], correct:"B" },
+        { id:23, q:"You are estimating the cost of a project by using the budget from a similar project last month. Which type of budget estimation technique are you using?", opts:["A. Expert judgment estimation","B. Three-point estimation","C. Bottom-up estimation","D. Analogous/historical estimation"], correct:"D" },
+        { id:24, q:"Why should you archive project documents and processes?", opts:["A. To complete the project management plan","B. To store all project documents on the project manager's personal computer","C. To keep a historical record of project activities","D. To redistribute remaining resources to other projects"], correct:"C" },
+        { id:25, q:"You are estimating the cost of a project by using the budget from a similar project last month. Which type of budget estimation technique are you using? (duplicate in PDF but keep)", opts:["A. Expert judgment estimation","B. Three-point estimation","C. Bottom-up estimation","D. Analogous/historical estimation"], correct:"D" },
+        { id:26, q:"You are managing a project that is experiencing significant scope creep. What is the impact on the project?", opts:["A. The project will require fewer resources to develop.","B. The project will take additional time to complete.","C. The project will be assigned a new project manager.","D. The project will include fewer deliverables."], correct:"B" },
+        { id:27, q:"Predictive and adaptive project management approaches have different key characteristics. For each key characteristic, select Predictive or Adaptive. (we pick the row: 'Completion of project according to the project management plan created at the beginning')", opts:["A. Predictive","B. Adaptive"], correct:"A" },
+        { id:28, q:"What is a vendor?", opts:["A. A business analyst who works with the finance team for a project","B. An external supplier who provides goods or services to a project","C. A procurement team member who negotiates contracts for a project","D. An experienced business professional who can sell the final product"], correct:"B" },
+        { id:29, q:"As a project manager, what information do you need to include in a status update to your boss?", opts:["A. Project work that has been completed","B. A list of project stakeholders","C. Project goals and objectives","D. A description of the project scope"], correct:"A" },
+        { id:30, q:"Your project team is using an agile project delivery method. In preparation for an upcoming meeting, your manager asks you to review the prioritized list of deliverables. What is this list called?", opts:["A. Kanban board","B. Backlog","C. User story","D. Work breakdown structure (WBS)"], correct:"B" },
+        { id:31, q:"You are one of the event planners for a large town festival. You are reviewing a list of potential bakeries that will supply the desserts at the festival. When you review the list, you notice that your favorite aunt owns one of the bakeries, but no one else on your team knows this information. According to project management ethical guidelines, what should you do?", opts:["A. Tell your aunt to lower her prices so that she can be easily selected.","B. Inform your aunt that she will need to remove her bakery from the selection list.","C. Proceed with the selection process, confident that you will act fairly.","D. Notify your supervisor that your aunt's bakery is on the list."], correct:"D" },
+        { id:32, q:"What is the purpose of following a change management process?", opts:["A. To document a change in scope and any impact to the project","B. To delay a new feature request so the customer will reconsider any changes","C. To inform the customer that your team takes their suggested product changes seriously","D. To show the project sponsor that you follow correct procedures"], correct:"A" },
+        { id:33, q:"As a project manager, which activity should you perform when using a predictive project management approach?", opts:["A. Create a detailed project plan that includes all of the project activities.","B. Begin the current sprint before planning for the next one.","C. View the backlog to determine the next planning activity required.","D. Review deliverables after each iteration with the customer"], correct:"A" },
+        { id:34, q:"A community center director hires your project team to build a playground for the families in the community. Upon completion of the playground, who is responsible for the final acceptance of the project?", opts:["A. The director (your client)","B. The project team","C. The families in the community","D. The project manager (you)"], correct:"A" },
+        { id:35, q:"You have contracted an external supplier to provide a tool needed for the development phase in a project. The tool has been delivered and the project team finds the tool acceptable and they are using it. Why should you now close the contract with the supplier?", opts:["A. To inform the procurement team that the new tool has been delivered","B. To prevent the supplier from contacting team members for payment","C. To request that the supplier be paid for the delivery of the tool","D. To thank the supplier for delivering the tool according to the contract"], correct:"C" },
+        { id:36, q:"Your manager explains that the project team starts every new project with a design stage where they create a design, test the design, make updates to the design, retest, and then create a final design. After this design stage, they create and follow a detailed project plan for all the remaining project deliverables. Which project management approach are they using?", opts:["A. Hybrid","B. Predictive","C. Scrum","D. Adaptive"], correct:"A" },
+        { id:37, q:"You have received a request to add a new scope item to your project and need to follow the change management process. Move the four actions in correct order (we treat as first step is identify). Which is first?", opts:["A. Identify the change","B. Assess the change impact","C. Approve or deny the change","D. Implement the approved change"], correct:"A" },
+        { id:38, q:"You are the project manager on an interior design project. The floor tiles in the original project plan are no longer available. Who has the authority to choose a new style for the replacement tiles?", opts:["A. The project team","B. The business analyst","C. The project manager","D. The customer"], correct:"D" },
+        { id:39, q:"How does an adaptive project management approach engage customers?", opts:["A. It encourages customers to contribute to the lessons learned process.","B. It encourages customers to complete sections of the project management plan.","C. It encourages customers to provide continuous feedback.","D. It encourages customers to complete tasks on the project backlog."], correct:"C" },
+        { id:40, q:"Why is quality assurance included in the project development process?", opts:["A. To evaluate the performance of new employees","B. To motivate project team members to complete project milestones on time","C. To ensure products meet specifications and requirements","D. To verify that project expenses remain under baseline budgets"], correct:"C" },
+        { id:41, q:"You need to select a project management approach for an upcoming project. Key considerations include: new technologies, unclear scope, client wants involvement, highly qualified team, significant testing. Which approach?", opts:["A. Adaptive","B. Predictive","C. Hybrid","D. Critical path"], correct:"A" },
+        { id:42, q:"While working on your current project, the team learned a new, creative approach to managing project resources. What is a benefit of reporting this new approach in the lessons learned documentation?", opts:["A. To inform other teams of the new approach","B. To inform the legal team of the new approach","C. To inform competitors of the new approach","D. To inform the client of the new approach"], correct:"A" },
+        { id:43, q:"What is a vendor? (repeat but keep)", opts:["A. A procurement team member who negotiates contracts","B. An experienced business professional who can sell the final product","C. An external supplier who provides goods or services to a project","D. A business analyst who works with the finance team"], correct:"C" },
+        { id:44, q:"At a team meeting, your project sponsor states the customer is concerned that the software being developed will not perform reliably. As the project manager, how should you respond?", opts:["A. Ask the engineering team to increase software reliability.","B. Email the customer to inform them reliability will be addressed at the end.","C. Meet with the customer to understand the basis of their concerns.","D. Inform the sponsor that the customer is using old performance data."], correct:"C" },
+        { id:45, q:"In a project, who has the highest level of authority to make project decisions such as changes to the project scope, schedule, or budget?", opts:["A. The business analyst","B. The sponsor","C. The quality assurance manager","D. The project manager"], correct:"B" },
+        { id:46, q:"You are creating a budget for your project by calculating the accurate cost of each activity in the project. Which method of budget development are you using?", opts:["A. Three-point estimate","B. Analogous/historical comparison","C. Top-down","D. Bottom-up"], correct:"D" },
+        { id:47, q:"During a project, your team develops new procedures to create certain product features more efficiently. Why should the team archive the project documents and new procedures?", opts:["A. To show the sponsor the efficiency of the team","B. To provide reference material for teams working on similar projects","C. To identify the employees that discovered the new procedures","D. To receive recognition for developing new procedures"], correct:"B" },
+        { id:48, q:"What describes a project's requirements, including major deliverables and exclusions of the project?", opts:["A. Scope statement","B. Status report","C. Work breakdown structure","D. Business case"], correct:"A" },
+        { id:49, q:"You are managing a project that is experiencing significant scope creep. What is the impact on the project? (similar to 26)", opts:["A. fewer resources","B. new project manager","C. fewer deliverables","D. additional time"], correct:"D" },
+        { id:50, q:"You are a team member working on a project. All signed NDA. You witness a team member talking about the project to someone outside. According to ethical guidelines, what should you do?", opts:["A. Send email to all employees with NDA definition","B. Let the project manager discover and take care","C. Bring the situation to the attention of the project manager","D. Remind the team about confidentiality"], correct:"C" },
+        { id:51, q:"Which action signifies the formal acceptance of the final product? (again)", opts:["A. Closing vendor contracts","B. Approval by sponsor and customer","C. Final budget approval","D. Completion of paperwork"], correct:"B" },
+        { id:52, q:"You are part of a project team that is working on developing a new app. A team member suggests feature out of scope. What should you do?", opts:["A. develop it","B. add to scope statement","C. consider dependency","D. decline development"], correct:"D" },
+        { id:53, q:"Which document is issued by the project sponsors to formally authorize the existence of a project?", opts:["A. Procurement contract","B. Scope statement","C. Project charter","D. Project management plan"], correct:"C" },
+        { id:54, q:"What is a dependency?", opts:["A. difference estimated/actual","B. accidental change","C. relationship between two or more tasks","D. work needed to complete"], correct:"C" },
+        { id:55, q:"You are an event planner for an upcoming wedding. The couple disagrees; you give them time to talk. Which conflict resolution technique?", opts:["A. Withdrawal","B. Collaborating","C. Compromising","D. Forcing"], correct:"A" },
+        { id:56, q:"You are a project team member working on a community festival. You want to take another team member off task to help you. What responsibility/authority?", opts:["A. promise to help later","B. get approval from PM","C. reassign if both done on time","D. can use help if you finish faster"], correct:"B" },
+        { id:57, q:"You are an event coordinator, customer requests change in invitation design. Which stage of change management?", opts:["A. Implement approved change","B. Identify the change","C. Assess impact","D. Approve change"], correct:"B" },
+        { id:58, q:"What is a deliverable? (again)", opts:["A. result created as outcome","B. task that leads to outcome","C. organized list","D. set of resources"], correct:"A" },
+        { id:59, q:"Which project characteristic suggests predictive approach? (defined deliverables)", opts:["A. multiple releases","B. high change","C. defined deliverables and deadlines","D. evolving goals"], correct:"C" },
+        { id:60, q:"A project team is having difficulty. PM offers bonus, time off, remote work. Why different perks?", opts:["A. wanted fun reward","B. discovered how to motivate individually","C. additional budget","D. random perks"], correct:"B" },
+        { id:61, q:"What impact does gold plating have? (scope increases, cost increases)", opts:["A. scope increases cost same","B. scope increases cost increases","C. scope same cost decreases","D. scope same cost increases"], correct:"B" },
+        { id:62, q:"Predictive/adaptive: project executed in sprints (adaptive).", opts:["A. Predictive","B. Adaptive"], correct:"B" },
+        { id:63, q:"What is a purpose of including a schedule in the project management plan?", opts:["A. communicate deadlines","B. obtain management support","C. evaluate performance","D. assign team members"], correct:"A" },
+        { id:64, q:"Who is responsible for completing project deliverables?", opts:["A. Sponsors","B. Product managers","C. Business analysts","D. Team members"], correct:"D" },
+        { id:65, q:"What is project procurement? (purchasing external)", opts:["A. planning communication","B. funding requirements","C. analysis business requirements","D. purchasing external goods"], correct:"D" },
+        { id:66, q:"What should you include in the project purpose section of the charter?", opts:["A. description of business need","B. key points in time","C. key milestones","D. expected deliverables"], correct:"A" },
+        { id:67, q:"You provide work planned vs completed, budget vs spent, issues. Which communication?", opts:["A. contingency plan","B. business plan","C. charter","D. status update"], correct:"D" },
+        { id:68, q:"Which statement describes main purpose of change management?", opts:["A. list scope requirements","B. discuss and add to WBS","C. document modifications and formalize approval","D. identify new stakeholders"], correct:"C" },
+        { id:69, q:"You discover road construction may interfere. Which part to update?", opts:["A. Schedule","B. Risk","C. Cost","D. Resource"], correct:"B" },
+        { id:70, q:"Which statement describes predictive characteristic?", opts:["A. planning entire scope at beginning","B. planning next two weeks","C. planning short increments","D. planning annually"], correct:"A" },
+        { id:71, q:"Why is contract closure important?", opts:["A. ensures work completed as specified","B. workers can't access materials","C. PM plan updated","D. budget has enough money"], correct:"A" },
+        { id:72, q:"Move project life cycle phases in order. (first: initiating)", opts:["A. Initiating","B. Organizing","C. Carrying out","D. Ending"], correct:"A" }, // first phase
+        { id:73, q:"A project consists of new product with software and hardware. Software developed using sprints, hardware prototype with minimal feedback. Which approach?", opts:["A. Hybrid","B. Incremental","C. Adaptive","D. Predictive"], correct:"A" },
+        { id:74, q:"You meet with customer and notice installed cabinets do not match selected ones. What to do?", opts:["A. order right cabinets regardless","B. require accept as-is discount","C. discuss options with customer, gain approval","D. communicate over budget"], correct:"C" },
+        { id:75, q:"House painting: match change step: request cost estimate for 15 gallons? (assess impact)", opts:["A. Identify","B. Assess impact","C. Approve","D. Implement"], correct:"B" },
+        { id:76, q:"Why contract closure important? (work completed as specified)", opts:["A. budget has enough","B. workers can't access","C. work completed as specified","D. PM plan updated"], correct:"C" },
+        { id:77, q:"Purpose of work breakdown structure (WBS)?", opts:["A. identify stakeholders","B. identify activities needed","C. identify communication","D. roles and responsibilities"], correct:"B" },
+        { id:78, q:"Place life cycle phases in order (initiating first).", opts:["A. Initiating","B. Organizing","C. Carrying out","D. Ending"], correct:"A" },
+        { id:79, q:"Which characteristic suggests predictive? (defined deliverables)", opts:["A. high change","B. evolving goals","C. defined deliverables","D. multiple releases"], correct:"C" },
+        { id:80, q:"In a project, who has highest authority for scope/schedule/budget changes?", opts:["A. PM","B. BA","C. QA manager","D. sponsor"], correct:"D" },
+        { id:81, q:"In adaptive approach, which describes team actions?", opts:["A. work on highest priority backlog","B. sequential tasks","C. gather all requirements at beginning","D. take turns leading"], correct:"A" },
+        { id:82, q:"Which document authorizes project existence and starting point?", opts:["A. project charter","B. procurement contract","C. PM plan","D. scope statement"], correct:"A" },
+        { id:83, q:"(extra) gold plating impact?", opts:["A. scope up cost same","B. scope up cost up","C. scope same cost down","D. scope same cost up"], correct:"B" },
+        { id:84, q:"Predictive vs adaptive: flexibility to make adjustments?", opts:["A. Predictive","B. Adaptive"], correct:"B" },
+        { id:85, q:"Which is a vendor?", opts:["A. external supplier","B. procurement negotiator","C. business analyst","D. experienced seller"], correct:"A" },
+        { id:86, q:"status update includes?", opts:["A. work completed","B. stakeholder list","C. goals","D. scope desc"], correct:"A" },
+        { id:87, q:"team member signs NDA, sees violation: ethical?", opts:["A. email all","B. let PM discover","C. bring to PM","D. remind team"], correct:"C" }
+    ];
+
+    const quizRoot = document.getElementById('quizRoot');
+    function renderQuiz() {
+        let html = '';
+        for (let q of questionsData) {
+            const optLetters = ['A', 'B', 'C', 'D'];
+            html += `<div class="question-panel" id="q-${q.id}" data-qid="${q.id}">`;
+            html += `<div class="q-title"><span class="q-num">${q.id}</span> Question</div>`;
+            html += `<div class="question-text">${q.q}</div>`;
+            html += `<div class="options" id="opts-${q.id}">`;
+            for (let i=0; i<q.opts.length; i++) {
+                let letter = optLetters[i];
+                html += `<label class="option-item">`;
+                html += `<input type="radio" name="q${q.id}" value="${letter}">`;
+                html += `<span class="option-letter">${letter}.</span>`;
+                html += `<span class="option-text">${q.opts[i].substring(3)}</span>`;
+                html += `</label>`;
+            }
+            html += `</div>`;
+            html += `<div class="feedback-row" id="fb-${q.id}" style="display: none;"></div>`;
+            html += `</div>`;
+        }
+        quizRoot.innerHTML = html;
+    }
+    renderQuiz();
+
+    document.getElementById('submitQuiz').addEventListener('click', function() {
+        let anySelected = false;
+        for (let q of questionsData) {
+            const radios = document.getElementsByName(`q${q.id}`);
+            let selected = null;
+            for (let r of radios) if (r.checked) { selected = r.value; anySelected = true; break; }
+            const fbDiv = document.getElementById(`fb-${q.id}`);
+            const panel = document.getElementById(`q-${q.id}`);
+            // remove previous highlight classes
+            panel.classList.remove('correct-highlight', 'wrong-highlight');
+            if (selected) {
+                const isCorrect = (selected === q.correct);
+                if (isCorrect) panel.classList.add('correct-highlight');
+                else panel.classList.add('wrong-highlight');
+                // build feedback
+                let rightText = '';
+                const opts = q.opts;
+                const letterMap = { 'A':0,'B':1,'C':2,'D':3 };
+                const correctIndex = letterMap[q.correct];
+                rightText = opts[correctIndex] ? opts[correctIndex] : q.correct;
+                let selectedText = '';
+                if (letterMap[selected] !== undefined) selectedText = opts[letterMap[selected]] || selected;
+                else selectedText = selected;
+
+                fbDiv.style.display = 'block';
+                fbDiv.innerHTML = `<div class="feedback-item">
+                    <span class="feedback-badge">your answer:</span> <span class="your-answer">${selectedText}</span>
+                    <span class="feedback-badge">correct answer:</span> <span class="right-answer">${rightText}</span>
+                    <span class="${isCorrect ? 'feedback-correct' : 'feedback-wrong'}">${isCorrect ? '✓ right' : '✗ wrong'}</span>
+                </div>`;
+            } else {
+                fbDiv.style.display = 'none';
+                panel.classList.remove('correct-highlight', 'wrong-highlight');
+            }
+        }
+        const msgDiv = document.getElementById('messageArea');
+        if (!anySelected) {
+            msgDiv.innerHTML = '<span class="warning-no-selection">⚠️ select at least one answer before submit</span>';
+        } else {
+            msgDiv.innerHTML = '';
+        }
+    });
+})();
+</script>
+</body>
+</html>
